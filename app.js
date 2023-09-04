@@ -11,9 +11,10 @@ const multer = require('multer');
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
+const crypto = require('crypto');
 
 const MONGODB_URI =
-  'mongodb+srv://maximilian:9u4biljMQc4jjqbe@cluster0-ntrwp.mongodb.net/shop';
+  'mongodb+srv://smotorol:6oYg8asWZwFXYJLt@cluster0.z5fqiim.mongodb.net/shop';
 
 const app = express();
 const store = new MongoDBStore({
@@ -27,7 +28,16 @@ const fileStorage = multer.diskStorage({
     cb(null, 'images');
   },
   filename: (req, file, cb) => {
-    cb(null, new Date().toISOString() + '-' + file.originalname);
+
+    crypto.randomBytes(16, (err, buffer) => {
+      if (err) {
+        console.log(err);
+        return res.redirect('/reset');
+      }
+
+      const token = buffer.toString('hex');
+      cb(null, Date.now() + '_' + token + '_' + file.originalname);
+    });
   }
 });
 
@@ -105,7 +115,7 @@ app.use((error, req, res, next) => {
   res.status(500).render('500', {
     pageTitle: 'Error!',
     path: '/500',
-    isAuthenticated: req.session.isLoggedIn
+    isAuthenticated: false
   });
 });
 
