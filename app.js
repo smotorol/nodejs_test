@@ -61,9 +61,19 @@ const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({type: "*/*"}));
+app.use(bodyParser.text({type: "*/*"}));
 app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single('image')
 );
+
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(
@@ -112,6 +122,7 @@ app.use(errorController.get404);
 app.use((error, req, res, next) => {
   // res.status(error.httpStatusCode).render(...);
   // res.redirect('/500');
+  console.log(error);
   res.status(500).render('500', {
     pageTitle: 'Error!',
     path: '/500',
