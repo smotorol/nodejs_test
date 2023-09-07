@@ -15,7 +15,7 @@ function requestPay(e, req)
 
     IMP.request_pay(
         {
-            pg: "TC0ONETIME",
+            pg: CID,
             pay_method: "card",
             merchant_uid: merchant_uid,
             name: "당근 10kg",
@@ -25,6 +25,7 @@ function requestPay(e, req)
             buyer_tel: "010-1234-5678",
             buyer_addr: "서울특별시 강남구 삼성동",
             buyer_postcode: "123-456",
+            m_redirect_url: ReqHostUrlSuccess
         },
         function (rsp) 
         {
@@ -56,13 +57,17 @@ function requestPay(e, req)
                     }
                 })
                 .then(result => {
+                    var TargetUrl = ReqHostUrl + '/orders';
+                    window.location.href = TargetUrl;
+
                     alert("결제에 성공하였습니다");
                 })
+                .catch(err => console.log(err + rsp.error_msg))
               } 
               else 
               {
 
-                fetch('http://localhost:3000/checkout/cancel', {
+                fetch(ReqHostUrlCancel, {
                             method: 'POST',
                             body: JSON.stringify({
                                 imp_uid: rsp.imp_uid,            // 결제 고유번호
@@ -81,18 +86,3 @@ function requestPay(e, req)
         }
     );
 }
-
-// return stripe.checkout.sessions.create({
-      //   payment_method_types: ['card'],
-      //   line_items: products.map(p => {
-      //     return {
-      //       name: p.productId.title,
-      //       description: p.productId.description,
-      //       amount: p.productId.price * 100,
-      //       currency: 'usd',
-      //       quantity: p.quantity
-      //     };
-      //   }),
-      //   success_url: req.protocol + '://' + req.get('host') + '/checkout/success', // => http://localhost:3000
-      //   cancel_url: req.protocol + '://' + req.get('host') + '/checkout/cancel'
-      // });

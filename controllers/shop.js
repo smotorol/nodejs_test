@@ -158,8 +158,9 @@ exports.getCheckout = (req, res, next) => {
         pageTitle: 'Checkout',
         products: products,
         totalSum: total,
-        RequestHostUrl: Url
-        //sessionId: session.id
+        RequestHostUrl: Url,
+        I_AM_PORT_SHOP_CODE: process.env.I_AM_PORT_SHOP_CODE,
+        CID: process.env.CID
       });
     })
     .catch(err => {
